@@ -1,0 +1,3 @@
+title=deepskytracker
+author=Kengsley Leung
+orientation=landscape

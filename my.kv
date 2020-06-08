@@ -1,0 +1,492 @@
+#:import Factory kivy.factory.Factory
+
+<CustomButtonRed@Button>:
+	color: 1,0,0,1
+	background_color: 0,0,0,0
+	canvas.before:
+		Color:
+			rgba: 1, 0, 0, 1
+		Line:
+			width: 1
+			rectangle: self.x, self.y, self.width, self.height
+
+<CustomLabelRed@Label>:
+	color: 1,0,0,1
+
+<CustomTextinputRed@TextInput>:
+	color: 1,0,0,1
+	background_color: 0,0,0,0
+	canvas.before:
+		Color:
+			rgba: 1, 0, 0, 1
+		Line:
+			width: 1
+			rectangle: self.x, self.y, self.width, self.height
+
+<CustomSpinnerOptions@SpinnerOption>:
+	canvas.before:
+		Color:
+			rgba: 1, 0, 0, 1
+		Rectangle:
+			size: self.size
+			pos: self.pos
+	background_color: 0, 0, 0, 1
+	color: 1,0,0,1
+
+<CustomSpinnerRed@Spinner>:
+	canvas.before:
+		Color:
+			rgba: 1, 0, 0, 1
+		Rectangle:
+			size: self.size
+			pos: self.pos
+
+	background_color: 0, 0, 0, 1
+	color: 1, 0, 0, 1
+
+	option_cls: Factory.CustomSpinnerOptions
+
+
+
+
+
+
+
+
+
+WindowManager:
+	MainWindow:
+	CompassWindow:
+		id: compasswindow
+	TrackCameraWindow:
+	TrackDetailWindow:
+		id: trackdetailscreen
+	FileSelectWindow:
+		id: fileselectscreen
+	TrackShowWindow:
+		id: trackshowscreen
+	SettingWindow:
+
+<MainWindow>:
+	name: "main"
+
+	GridLayout:
+		cols: 1
+		size_hint: .8, .8
+		pos_hint: {'x': .1, 'y': .1}
+
+		GridLayout:
+			cols: 4
+
+			CustomButtonRed:
+				text: "Tracker"
+				on_release:
+					app.root.current = "trackcamera"
+					root.manager.transition.direction = "left"
+
+			CustomButtonRed:
+				text: "Tutor"
+
+			CustomButtonRed:
+				text: "NESW"
+				on_release:
+					app.root.current = "compasswindow"
+					root.manager.transition.direction = "left"
+
+			CustomButtonRed:
+				text: "Angle"
+
+			CustomButtonRed:
+				text: "Setting"
+				on_release:
+					app.root.current = "setting"
+					root.manager.transition.direction = "left"
+
+<CompassWindow>:
+	name: "compasswindow"
+
+	FloatLayout:
+
+	canvas:
+		Color:
+			rgb: .98, .98, .98
+		Rectangle:
+			size: self.size
+
+	Image:
+		source: 'rose.png'
+
+	Image:
+		source: 'needle.png'
+
+		canvas.before:
+			PushMatrix
+			Rotate:
+				angle: app.needle_angle
+				axis: 0, 0, 1
+				origin: self.center
+
+		canvas.after:
+			PopMatrix
+
+<TrackCameraWindow>:
+	name: "trackcamera"
+
+	camera_model: camera_model
+	track_len: track_len
+	photo_len: photo_len
+
+	GridLayout:
+		cols: 1
+
+		GridLayout:
+			cols: 1
+
+			GridLayout:
+				cols: 4
+				CustomLabelRed:
+					text: "Camera: "
+				CustomSpinnerRed:
+					text: 'Camera select'
+					size: 100, 44
+					pos_hint: {'center': (.5, .5)}
+					values: ['Nikon', 'Sony', 'Canon', 'ZWO']
+					on_text:
+						root.push_camera(self.text)
+
+				CustomLabelRed:
+					text: "Model: "
+				CustomTextinputRed:
+					id: camera_model
+					multiline: False
+
+			GridLayout:
+				cols: 4
+				CustomLabelRed:
+					text: "Track Len: "
+				GridLayout:
+					cols: 2
+					CustomTextinputRed:
+						id: track_len
+						multiline: False
+					CustomLabelRed:
+						text: "(mm)"
+						size_hint: .2, 1
+
+				CustomLabelRed:
+					text: "Photo Len: "
+				GridLayout:
+					cols: 2
+					CustomTextinputRed:
+						id: photo_len
+						multiline: False
+					CustomLabelRed:
+						text: "(mm)"
+						size_hint: .2, 1
+
+			GridLayout:
+				cols: 2
+				CustomLabelRed:
+					text: "Tracker: "
+				CustomSpinnerRed:
+					text: 'Tracker select'
+					size: 100, 44
+					pos_hint: {'center': (.5, .5)}
+					values: ['Star Advantage']
+					on_text:
+						root.push_tracker(self.text)
+
+			GridLayout:
+				cols: 2
+				CustomLabelRed:
+					text: "Date: "
+				CustomTextinputRed:
+					multiline: False
+
+			GridLayout:
+				cols: 2
+				CustomLabelRed:
+					text: "Location: "
+				CustomTextinputRed:
+					multiline: False
+
+			GridLayout:
+				cols: 2
+				CustomButtonRed:
+					text: "Back"
+					on_release:
+						app.root.current = "main"
+						root.manager.transition.direction = "right"
+
+				CustomButtonRed:
+					text: "Next"
+					on_release:
+						app.root.current = "trackdetail"
+						root.manager.transition.direction = "left"
+						root.push_next()
+
+<TrackDetailWindow>:
+	name: "trackdetail"
+
+	GridLayout:
+		cols: 1
+		GridLayout:
+			cols: 2
+
+			GridLayout:
+				cols: 1
+
+				GridLayout:
+					cols: 2
+					size_hint: 1, .2
+
+					CustomLabelRed:
+						text: "Img: "
+					
+					CustomButtonRed:
+						text: "Choose img ..."
+						on_release:
+							app.root.current = "fileselect"
+							root.manager.transition.direction = "left"
+
+				GridLayout:
+					cols: 1
+
+					CustomSpinnerRed:
+						id: top_direction
+						text: 'N'
+						size_hint: 1, .1
+						values: ['N', 'S']
+						on_text:
+							root.push_topdirection(self.text)
+
+					GridLayout:
+						cols: 3
+						CustomSpinnerRed:
+							id: left_direction
+							text: 'W'
+							size_hint: .1, 1
+							values: ['W', 'E']
+							on_text:
+								root.push_leftdirection(self.text)
+						Image:
+							id: image
+						CustomLabelRed:
+							id: right_direction
+							text: 'E'
+							size_hint: .1, 1
+
+					CustomLabelRed:
+						id: bot_direction
+						text: 'S'
+						size_hint: 1, .1
+
+			GridLayout:
+				cols: 2
+				CustomLabelRed:
+					text: "Hemisphere(N/S): "
+				CustomSpinnerRed:
+					text: 'Select ...'
+					size: 100, 44
+					pos_hint: {'center': (.5, .5)}
+					values: ['N', 'S']
+					on_text:
+						root.push_hemisphere(self.text)
+
+				CustomLabelRed:
+					text: "Short(up/down): "
+				CustomSpinnerRed:
+					text: 'Select ...'
+					size: 100, 44
+					pos_hint: {'center': (.5, .5)}
+					values: ['UP', 'DOWN']
+					on_text:
+						root.push_short(self.text)
+
+				CustomLabelRed:
+					text: "orientation(hoz./vecl.): "
+				CustomSpinnerRed:
+					text: 'Select ...'
+					size: 100, 44
+					pos_hint: {'center': (.5, .5)}
+					values: ['landscape', 'portrait']
+					on_text:
+						root.push_orientation(self.text)
+
+		GridLayout:
+			cols: 3
+			size_hint: 1, .2
+
+			CustomButtonRed:
+				text: "Back"
+				on_release:
+					app.root.current = "trackcamera"
+					root.manager.transition.direction = "right"
+
+			CustomButtonRed:
+				text: "Home"
+				on_release:
+					app.root.current = "main"
+					root.manager.transition.direction = "right"
+
+			CustomButtonRed:
+				text: "Calcutate"
+				on_release:
+					root.manager.ids.trackshowscreen.update_calculate()
+					app.root.current = "trackshow"
+					root.manager.transition.direction = "left"
+
+<FileSelectWindow>:
+	name: "fileselect"
+
+	BoxLayout:
+		orientation: "vertical"
+		FileChooserListView:
+			id: filechooser
+			color: 1, 0, 0
+
+		BoxLayout:
+			size_hint: 1, .2
+
+			CustomButtonRed:
+				text: "Back"
+				on_release:
+					app.root.current = "trackdetail"
+					root.manager.transition.direction = "right"
+			CustomButtonRed:
+				text: "Load"
+				on_release:
+					root.load(filechooser.path, filechooser.selection)
+					app.root.current = "trackdetail"
+					root.manager.transition.direction = "right"
+
+
+<TrackShowWindow>:
+	name: "trackshow"
+
+	GridLayout:
+		cols: 1
+
+		GridLayout:
+			cols: 2
+
+			GridLayout:
+				cols: 1
+				GridLayout:
+					cols: 1
+					Image:
+						id: image_up
+						source: 'arrow_edge.png'
+						canvas.before:
+							PushMatrix
+							Rotate:
+								angle: 90
+								origin: self.center
+						canvas.after:
+							PopMatrix
+				GridLayout:
+					cols: 3
+					Image:
+						id: image_left
+						source: 'arrow_edge.png'
+						canvas.before:
+							PushMatrix
+							Rotate:
+								angle: 180
+								origin: self.center
+						canvas.after:
+							PopMatrix
+					Image:
+						id: image_center
+						source: 'center_edge.png'
+					Image:
+						id: image_right
+						source: 'arrow_edge.png'
+				GridLayout:
+					cols: 1
+					Image:
+						id: image_down
+						source: 'arrow_edge.png'
+						canvas.before:
+							PushMatrix
+							Rotate:
+								angle: -90
+								origin: self.center
+						canvas.after:
+							PopMatrix
+
+			GridLayout:
+				cols: 1
+				CustomLabelRed:
+					text: "Suggestion: "
+				CustomLabelRed:
+					id: suggest_status
+				CustomLabelRed:
+					text: str(root.total_rolls) + " rolls"
+				CustomLabelRed:
+					text: str(root.total_teeths) + " teeths"
+
+		GridLayout:
+			cols: 3
+			size_hint: 1, .2
+
+			CustomButtonRed:
+				text: "Start"
+				on_release:
+					root.start_rotate()
+
+			CustomButtonRed:
+				text: "Stop"
+				on_release:
+					root.stop_rotate()
+
+			CustomButtonRed:
+				text: "Reset"
+				on_release:
+					root.reset_rotate()
+
+		GridLayout:
+			cols: 2
+			size_hint: 1, .2
+
+			CustomButtonRed:
+				text: "Back"
+				on_release:
+					app.root.current = "trackdetail"
+					root.manager.transition.direction = "right"
+
+			CustomButtonRed:
+				text: "Home"
+				on_release:
+					app.root.current = "main"
+					root.manager.transition.direction = "right"
+
+<SettingWindow>:
+	name: "setting"
+
+	GridLayout:
+		cols: 1
+		GridLayout:
+			cols: 2
+			CustomLabelRed:
+				text: "Languega: "
+			CustomSpinnerRed:
+				text: 'Select ...'
+				size: 100, 44
+				pos_hint: {'center': (.5, .5)}
+				values: ['English', 'Chinese']
+				on_text:
+					root.on_spinner_select(self.text)
+
+		GridLayout:
+			cols: 2
+			CustomLabelRed:
+				text: "Auto time: "
+			CustomTextinputRed:
+				multiline: False
+
+		CustomButtonRed:
+			text: "home"
+			on_release:
+				app.root.current = "main"
+				root.manager.transition.direction = "right"
